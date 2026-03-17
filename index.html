@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>QuickTable - サッと使える表ツール | T-003 Tools</title>
+<meta name="description" content="ログイン不要・無料。ブラウザで即使える軽量テーブルツール。四則演算・コピー対応。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#f0f2f5;--bg2:#fff;--surface:#f7f8fa;--border:#d4dae3;--border-active:#2563eb;--text:#1e293b;--text-dim:#64748b;--text-bright:#0f172a;--accent:#2563eb;--accent-bg:#eff6ff;--cell-bg:#fff;--cell-hover:#f1f5f9;--cell-active:#dbeafe;--header-bg:#e8edf4;--header-text:#475569;--success:#16a34a;--danger:#dc2626;--radius:6px;--font-mono:'JetBrains Mono',monospace;--font-sans:'Noto Sans JP',-apple-system,sans-serif;--shadow-sm:0 1px 3px rgba(0,0,0,.06);--shadow-md:0 2px 8px rgba(0,0,0,.08);--fill-1:#fef3c7;--fill-2:#dbeafe;--fill-3:#dcfce7;--fill-4:#fce7f3;--fill-5:#f3e8ff;--fx-bg:#fef9c3;--fx-border:#eab308;--fx-text:#854d0e}
+html{font-size:14px}body{font-family:var(--font-sans);background:var(--bg);color:var(--text);min-height:100dvh;display:flex;flex-direction:column}
+.hdr{padding:10px 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);background:var(--bg2);box-shadow:var(--shadow-sm)}
+.logo{display:flex;align-items:center;gap:8px}.logo-i{width:26px;height:26px;background:var(--accent);border-radius:5px;display:grid;place-items:center;font-family:var(--font-mono);font-weight:600;font-size:10px;color:#fff}.logo-t{font-family:var(--font-mono);font-weight:600;font-size:15px;color:var(--text-bright)}.logo-s{font-size:11px;color:var(--text-dim)}
+.hdr-r{display:flex;gap:6px;align-items:center}
+.lang-btn{font-family:var(--font-mono);font-size:10px;color:var(--text-dim);background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:3px 8px;cursor:pointer}.lang-btn:hover{color:var(--accent);border-color:var(--accent)}
+.main{flex:1;padding:12px;max-width:1200px;width:100%;margin:0 auto}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:12px;margin-bottom:10px;box-shadow:var(--shadow-sm)}
+.card-t{font-size:10px;color:var(--text-dim);font-family:var(--font-mono);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
+.btn{padding:5px 10px;border:1px solid var(--border);border-radius:var(--radius);background:var(--bg2);color:var(--text);font-family:var(--font-mono);font-size:11px;cursor:pointer;transition:all .12s;white-space:nowrap;display:inline-flex;align-items:center;gap:3px}.btn:hover{border-color:var(--accent);color:var(--accent)}.btn:active{transform:scale(.97)}
+.btn-p{background:var(--accent);border-color:var(--accent);color:#fff}.btn-p:hover{background:#1d4ed8;color:#fff}
+.btn-s{padding:4px 8px;font-size:10px}
+.btn-ok{border-color:var(--success);color:var(--success)}.btn-ok:hover{background:rgba(22,163,74,.08)}
+.btn-danger{border-color:var(--danger);color:var(--danger)}.btn-danger:hover{background:rgba(220,38,38,.08)}
+.btn-fx-confirm{background:var(--fx-bg);border-color:var(--fx-border);color:var(--fx-text);font-weight:600}.btn-fx-confirm:hover{background:#fde68a}
+.presets{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px}
+.pre-btn{padding:5px 10px;border:1px solid var(--border);border-radius:4px;background:var(--surface);color:var(--text);font-family:var(--font-mono);font-size:11px;cursor:pointer;transition:all .12s}.pre-btn:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-bg)}.pre-btn.on{border-color:var(--accent);color:#fff;background:var(--accent)}
+.cust{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.cust-label{font-size:11px;color:var(--text-dim);font-family:var(--font-mono)}
+.sz-g{display:flex;align-items:center;gap:3px}
+.sz-in{width:48px;padding:4px 5px;background:var(--bg2);border:1px solid var(--border);border-radius:4px;color:var(--text);font-family:var(--font-mono);font-size:12px;text-align:center}.sz-in:focus{outline:none;border-color:var(--accent)}
+.sz-sel{padding:4px;background:var(--bg2);border:1px solid var(--border);border-radius:4px;color:var(--text);font-family:var(--font-mono);font-size:11px}
+.sz-x{color:var(--text-dim);font-family:var(--font-mono)}
+.tb{display:flex;align-items:center;gap:5px;flex-wrap:wrap}
+.fb{flex:1;min-width:140px;display:flex;align-items:center;background:var(--bg2);border:1px solid var(--border);border-radius:4px;overflow:hidden;transition:border-color .2s,background .2s}
+.fb.fx-on{border-color:var(--fx-border);background:var(--fx-bg)}
+.fb .cr{font-family:var(--font-mono);font-size:11px;color:var(--accent);min-width:34px;text-align:center;padding:0 6px;border-right:1px solid var(--border);background:var(--surface);user-select:none;line-height:28px}
+.fb.fx-on .cr{background:var(--fx-bg);color:var(--fx-text);font-weight:600}
+.fb input{flex:1;background:transparent;border:none;color:var(--text-bright);font-family:var(--font-mono);font-size:12px;padding:5px 6px;outline:none}
+.fb.fx-on input{color:var(--fx-text)}
+.sep{width:1px;height:22px;background:var(--border);margin:0 1px}
+.fx-btn{padding:4px 8px;border:1px solid var(--border);border-radius:4px;background:var(--surface);font-family:var(--font-mono);font-size:11px;font-weight:600;font-style:italic;cursor:pointer;transition:all .15s;color:var(--text-dim)}
+.fx-btn:hover:not(.disabled){border-color:var(--accent);color:var(--accent)}
+.fx-btn.on{background:var(--fx-bg);border-color:var(--fx-border);color:var(--fx-text)}
+.fx-btn.disabled{opacity:.35;cursor:not-allowed}
+.ops{display:flex;gap:2px}
+.op{width:26px;height:26px;border:1px solid var(--border);border-radius:4px;background:var(--surface);color:var(--text);font-family:var(--font-mono);font-size:12px;font-weight:600;cursor:pointer;display:grid;place-items:center;transition:all .12s}
+.op:hover:not(:disabled){border-color:var(--accent);color:var(--accent);background:var(--accent-bg)}
+.op:disabled{opacity:.3;cursor:default}
+.clr-bar{display:flex;align-items:center;gap:2px}
+.sw{width:20px;height:20px;border-radius:4px;border:2px solid transparent;cursor:pointer;transition:all .1s}.sw:hover{transform:scale(1.15)}.sw.on{border-color:var(--text-bright)}
+.sw.nf{background:var(--bg2);border:2px solid var(--border);position:relative}.sw.nf::after{content:'';position:absolute;top:2px;left:8px;width:1px;height:12px;background:#ef4444;transform:rotate(45deg)}
+.view-btns{display:flex;gap:2px}
+.vb{padding:4px 8px;border:1px solid var(--border);border-radius:4px;background:var(--surface);font-size:10px;font-family:var(--font-mono);cursor:pointer;color:var(--text-dim)}.vb:hover{border-color:var(--accent);color:var(--accent)}.vb.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.tw{overflow:auto;border:1px solid var(--border);border-radius:var(--radius);background:var(--bg2);box-shadow:var(--shadow-sm)}
+.sh{border-collapse:collapse;width:max-content;min-width:100%}
+.sh th,.sh td{border:1px solid var(--border);padding:0}
+.sh th{background:var(--header-bg);color:var(--header-text);font-family:var(--font-mono);font-size:10px;font-weight:600;text-align:center;padding:5px 6px;user-select:none;white-space:nowrap;position:sticky;top:0;z-index:2}
+.sh th.corner{background:var(--surface);min-width:30px;width:30px;position:sticky;left:0;z-index:3}
+.sh th.ch{min-width:84px}
+.sh th.rh{min-width:30px;cursor:pointer;position:sticky;left:0;z-index:2;background:var(--header-bg)}.sh th.rh:hover{background:var(--cell-hover)}
+.sh td{background:var(--cell-bg);min-width:84px;height:28px;position:relative}.sh td:hover{background:var(--cell-hover)}
+.sh td.act{background:var(--cell-active);box-shadow:inset 0 0 0 1.5px var(--border-active);z-index:1}
+.sh td.fx-ref{box-shadow:inset 0 0 0 1.5px var(--fx-border);background:var(--fx-bg)}
+.ci{width:100%;height:100%;min-height:26px;padding:3px 5px;background:transparent;border:none;color:var(--text-bright);font-family:var(--font-mono);font-size:12px;outline:none}
+.ci.fm{color:var(--accent)}.ci.er{color:var(--danger)}
+.sh tbody tr:nth-child(even) td{background:#f8fafc}.sh tbody tr:nth-child(even) td:hover{background:var(--cell-hover)}
+/* Preview */
+.preview-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:50;justify-content:center;align-items:flex-start;padding:20px;overflow:auto}
+.preview-overlay.show{display:flex}
+.preview-box{background:#fff;border-radius:8px;padding:20px;max-width:95vw;max-height:90vh;overflow:auto;box-shadow:0 8px 30px rgba(0,0,0,.2)}
+.preview-close{position:sticky;top:0;float:right;background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:4px 10px;font-family:var(--font-mono);font-size:11px;cursor:pointer}.preview-close:hover{border-color:var(--danger);color:var(--danger)}
+.pv-table{border-collapse:collapse;margin-top:8px;width:100%}
+.pv-table td{border:1px solid #d1d5db;padding:6px 10px;font-size:12px;text-align:left;color:#1f2937}
+/* Confirm */
+.confirm-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:60;justify-content:center;align-items:center}
+.confirm-overlay.show{display:flex}
+.confirm-box{background:#fff;border-radius:8px;padding:24px;max-width:320px;width:90%;text-align:center;box-shadow:0 8px 30px rgba(0,0,0,.2)}
+.confirm-box p{font-size:13px;color:var(--text);margin-bottom:16px;line-height:1.6}
+.confirm-btns{display:flex;gap:8px;justify-content:center}
+.toast{position:fixed;bottom:16px;left:50%;transform:translateX(-50%) translateY(60px);background:var(--bg2);border:1px solid var(--success);color:var(--success);padding:7px 16px;border-radius:var(--radius);font-family:var(--font-mono);font-size:11px;box-shadow:var(--shadow-md);transition:transform .25s;z-index:100;pointer-events:none}.toast.show{transform:translateX(-50%) translateY(0)}
+.ft{padding:10px 16px;border-top:1px solid var(--border);text-align:center;font-size:10px;color:var(--text-dim);font-family:var(--font-mono);background:var(--bg2)}.ft a{color:var(--accent);text-decoration:none}.ft a:hover{text-decoration:underline}
+.ft-note{display:inline-flex;align-items:center;gap:4px}
+.ft-icon{width:20px;height:20px;border-radius:50%;object-fit:cover;vertical-align:middle}
+.info{font-size:11px;color:var(--text-dim);line-height:1.8}.info h3{font-size:12px;color:var(--text);margin-bottom:5px;font-family:var(--font-mono)}.info kbd{background:var(--surface);border:1px solid var(--border);border-radius:3px;padding:1px 4px;font-family:var(--font-mono);font-size:10px;color:var(--text)}
+@media(max-width:768px){.ci{font-size:16px}.fb input{font-size:16px}.sz-in{font-size:16px}.sz-sel{font-size:16px}}
+@media(max-width:640px){html{font-size:13px}.hdr{padding:8px 10px}.logo-s{display:none}.main{padding:8px}.card{padding:10px}.presets{gap:4px}.pre-btn{padding:4px 7px;font-size:10px}.tb{gap:3px}.fb{min-width:100px}.sh th.ch,.sh td{min-width:68px}.op{width:24px;height:24px;font-size:11px}.sw{width:18px;height:18px}.btn-s{font-size:10px;padding:3px 6px}}
+</style>
+</head>
+<body>
+<header class="hdr">
+  <div class="logo"><div class="logo-i">T3</div><span class="logo-t">QuickTable</span><span class="logo-s" data-i18n="subtitle">— サッと使える表ツール</span></div>
+  <div class="hdr-r"><button class="lang-btn" onclick="toggleLang()">EN/JP</button></div>
+</header>
+<main class="main">
+  <div class="card">
+    <div class="card-t" data-i18n="sizeLabel">テーブルサイズ</div>
+    <div class="presets" id="presets"></div>
+    <div class="cust">
+      <span class="cust-label" data-i18n="custom">カスタム:</span>
+      <div class="sz-g"><span class="cust-label" data-i18n="rowLabel">行</span><select class="sz-sel" id="rSel" onchange="syncR()"></select><input type="number" class="sz-in" id="rIn" value="5" min="1" max="100" onchange="syncRI()"></div>
+      <span class="sz-x">×</span>
+      <div class="sz-g"><span class="cust-label" data-i18n="colLabel">列</span><select class="sz-sel" id="cSel" onchange="syncC()"></select><input type="number" class="sz-in" id="cIn" value="4" min="1" max="26" onchange="syncCI()"></div>
+      <button class="btn btn-p" onclick="gen()" data-i18n="generate">作成</button>
+      <button class="btn btn-s" onclick="addR()" data-i18n="addRow">+ 行</button>
+      <button class="btn btn-s" onclick="addC()" data-i18n="addCol">+ 列</button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="tb">
+      <button class="fx-btn disabled" id="fxBtn" onclick="toggleFx()">fx</button>
+      <div class="fb" id="fBar">
+        <span class="cr" id="cRef">—</span>
+        <input type="text" id="fIn" data-i18n-placeholder="fph">
+      </div>
+      <!-- Confirm / Apply button: shows as 確定 in fx mode, otherwise as 入力 -->
+      <button class="btn btn-s btn-fx-confirm" id="confirmBtn" onclick="doConfirm()" data-i18n="confirmBtn">確定</button>
+      <!-- Cell clear -->
+      <button class="btn btn-s" onclick="clearCell()" data-i18n="cellClear">セルクリア</button>
+      <div class="sep"></div>
+      <div class="ops">
+        <button class="op" onclick="insOp('+')" disabled>+</button>
+        <button class="op" onclick="insOp('-')" disabled>−</button>
+        <button class="op" onclick="insOp('*')" disabled>×</button>
+        <button class="op" onclick="insOp('/')" disabled>÷</button>
+      </div>
+      <div class="sep"></div>
+      <div class="clr-bar">
+        <div class="sw nf on" data-c="" onclick="pickClr(this)"></div>
+        <div class="sw" style="background:var(--fill-1)" data-c="fill-1" onclick="pickClr(this)"></div>
+        <div class="sw" style="background:var(--fill-2)" data-c="fill-2" onclick="pickClr(this)"></div>
+        <div class="sw" style="background:var(--fill-3)" data-c="fill-3" onclick="pickClr(this)"></div>
+        <div class="sw" style="background:var(--fill-4)" data-c="fill-4" onclick="pickClr(this)"></div>
+        <div class="sw" style="background:var(--fill-5)" data-c="fill-5" onclick="pickClr(this)"></div>
+      </div>
+      <div class="sep"></div>
+      <div class="view-btns">
+        <button class="vb on" id="vEdit" onclick="setView('edit')" data-i18n="editMode">編集</button>
+        <button class="vb" id="vPrev" onclick="setView('preview')" data-i18n="previewMode">プレビュー</button>
+      </div>
+      <div class="sep"></div>
+      <button class="btn btn-s btn-ok" onclick="copyTbl()" data-i18n="copy">📋 コピー</button>
+      <button class="btn btn-s" onclick="confirmClear()" data-i18n="clearAll">🗑 全部クリア</button>
+    </div>
+  </div>
+  <div class="tw"><table class="sh" id="sheet"></table></div>
+  <div class="card info" style="margin-top:10px">
+    <h3 data-i18n="htTitle">使い方</h3>
+    <span data-i18n="htBody"></span>
+  </div>
+</main>
+<footer class="ft"><span>T-003 Tools</span> · <a href="https://note.com/t003_yukizou" target="_blank" rel="noopener" class="ft-note"><img src="icon.png" alt="T-003" class="ft-icon"><span data-i18n="noteLink">note マイページ</span></a> · <span data-i18n="ftN">ログイン不要・完全無料・データ送信なし</span></footer>
+<div class="preview-overlay" id="pvOvl" onclick="if(event.target===this)closePv()"><div class="preview-box"><button class="preview-close" onclick="closePv()" data-i18n="closePv">✕ 閉じる</button><table class="pv-table" id="pvTable"></table></div></div>
+<div class="confirm-overlay" id="cfmOvl" onclick="if(event.target===this)closeCfm()"><div class="confirm-box"><p data-i18n="clearConfirm">テーブルの内容をすべてクリアします。<br>この操作は元に戻せません。</p><div class="confirm-btns"><button class="btn" onclick="closeCfm()" data-i18n="cancel">キャンセル</button><button class="btn btn-danger" onclick="doClear()" data-i18n="clearYes">クリアする</button></div></div></div>
+<div class="toast" id="toast"></div>
+<script>
+const LL={
+  ja:{subtitle:'— サッと使える表ツール',sizeLabel:'テーブルサイズ',custom:'カスタム:',rowLabel:'行',colLabel:'列',generate:'作成',addRow:'+ 行',addCol:'+ 列',copy:'📋 全コピー',clearAll:'🗑 全部クリア',confirmBtn:'確定',cellClear:'セルクリア',fph:'セルを選択 / 値を入力',editMode:'編集',previewMode:'プレビュー',closePv:'✕ 閉じる',
+  htTitle:'使い方',htBody:'プリセットまたはカスタムサイズ（行×列）でテーブル作成。セルをタップして入力。<br><b>数式モード:</b> セルを選択 → <kbd>fx</kbd> → 他のセルをタップでセル番号が自動入力 → 演算子ボタン → 次のセル → 「確定」で入力完了。<br><b>セルクリア:</b> セルを選んで「セルクリア」で内容と色を消去。<br><b>色分け:</b> パレットから色を選んでセルをタップ。<br><b>プレビュー:</b> 入力欄のない見やすい表示。<br>「コピー」→ Excel/スプレッドシートに貼付可。ログイン不要・データ送信なし。',
+  noteLink:'note マイページ',ftN:'ログイン不要・完全無料・データ送信なし',clearConfirm:'テーブルの内容をすべてクリアします。<br>この操作は元に戻せません。',cancel:'キャンセル',clearYes:'クリアする',copied:'コピーしました',cleared:'クリアしました',generated:'テーブルを作成しました',fxStart:'数式モード',fxEnd:'数式を確定しました',cellCleared:'セルをクリアしました',applied:'入力しました',pre:['3×3','5×4','5×8','10×5','10×10']},
+  en:{subtitle:'— Instant table tool',sizeLabel:'TABLE SIZE',custom:'Custom:',rowLabel:'Rows',colLabel:'Cols',generate:'Create',addRow:'+ Row',addCol:'+ Col',copy:'📋 Copy All',clearAll:'🗑 Clear All',confirmBtn:'Apply',cellClear:'Cell Clear',fph:'Select cell / enter value',editMode:'Edit',previewMode:'Preview',closePv:'✕ Close',
+  htTitle:'How to Use',htBody:'Create from presets or custom size (rows × cols). Tap cell to type.<br><b>Formula mode:</b> Select cell → <kbd>fx</kbd> → tap other cells to insert refs → operators → "Apply" to confirm.<br><b>Cell Clear:</b> Select cell → "Cell Clear" to erase content and color.<br><b>Colors:</b> Pick from palette then tap cells.<br><b>Preview:</b> Clean read-only view.<br>"Copy" → paste into Excel/Sheets. No login · no data sent.',
+  noteLink:'note Page',ftN:'No login · Free · No data sent',clearConfirm:'Clear all table content?<br>This cannot be undone.',cancel:'Cancel',clearYes:'Clear',copied:'Copied',cleared:'Cleared',generated:'Table created',fxStart:'Formula mode',fxEnd:'Formula applied',cellCleared:'Cell cleared',applied:'Applied',pre:['3×3','5×4','5×8','10×5','10×10']}
+};
+let lang=(navigator.language||'').startsWith('ja')?'ja':'en';
+function applyL(){const t=LL[lang];document.querySelectorAll('[data-i18n]').forEach(e=>{const k=e.getAttribute('data-i18n');if(t[k]!=null)e.innerHTML=t[k]});document.querySelectorAll('[data-i18n-placeholder]').forEach(e=>{const k=e.getAttribute('data-i18n-placeholder');if(t[k]!=null)e.placeholder=t[k]});document.documentElement.lang=lang;buildPre();}
+function toggleLang(){lang=lang==='ja'?'en':'ja';applyL();}
+
+let D={},CLR={},R=0,C=0,act=null,curClr='',fxMode=false,fxAnchor=null;
+const PRE=[[3,3],[5,4],[5,8],[10,5],[10,10]];
+const colN=c=>String.fromCharCode(65+c),cid=(r,c)=>colN(c)+(r+1);
+const pRef=ref=>{const m=ref.match(/^([A-Z])(\d+)$/);return m?{c:m[1].charCodeAt(0)-65,r:parseInt(m[2])-1}:null;};
+const FM={'fill-1':'var(--fill-1)','fill-2':'var(--fill-2)','fill-3':'var(--fill-3)','fill-4':'var(--fill-4)','fill-5':'var(--fill-5)'};
+
+function buildPre(){document.getElementById('presets').innerHTML=PRE.map((p,i)=>`<button class="pre-btn" onclick="doPre(${p[0]},${p[1]},this)">${LL[lang].pre[i]}</button>`).join('');}
+function doPre(r,c,b){document.getElementById('rIn').value=r;document.getElementById('cIn').value=c;syncRI();syncCI();document.querySelectorAll('.pre-btn').forEach(x=>x.classList.remove('on'));if(b)b.classList.add('on');gen();}
+function buildSel(){const rs=document.getElementById('rSel'),cs=document.getElementById('cSel');rs.innerHTML='';cs.innerHTML='';for(let i=1;i<=50;i++)rs.innerHTML+=`<option>${i}</option>`;for(let i=1;i<=26;i++)cs.innerHTML+=`<option>${i}</option>`;rs.value='5';cs.value='4';}
+function syncR(){document.getElementById('rIn').value=document.getElementById('rSel').value}
+function syncC(){document.getElementById('cIn').value=document.getElementById('cSel').value}
+function syncRI(){document.getElementById('rSel').value=Math.min(50,Math.max(1,document.getElementById('rIn').value))}
+function syncCI(){document.getElementById('cSel').value=Math.min(26,Math.max(1,document.getElementById('cIn').value))}
+
+function ev(f){try{let e=f.substring(1).trim().toUpperCase();e=e.replace(/[A-Z]\d+/g,m=>{const c=D[m];if(!c)return'0';const v=parseFloat(c.v);return isNaN(v)?'0':v.toString()});if(!/^[\d\s+\-*/().]+$/.test(e))return'#ERR';const r=Function('"use strict";return('+e+')')();return isFinite(r)?Math.round(r*1e10)/1e10:'#ERR'}catch{return'#ERR'}}
+function recalc(){for(let p=0;p<10;p++){let ch=false;for(const id in D){const c=D[id];if(c.raw.startsWith('=')){const nv=ev(c.raw);if(nv!==c.v){c.v=nv;ch=true}}}if(!ch)break}for(const id in D){const inp=document.querySelector(`[data-c="${id}"]`);if(inp){const c=D[id];inp.value=c.raw.startsWith('=')?c.v:c.raw;inp.classList.toggle('fm',c.raw.startsWith('='));inp.classList.toggle('er',c.v==='#ERR')}}}
+
+// FX MODE
+function updateFxBtn(){const b=document.getElementById('fxBtn');b.classList.toggle('disabled',!act&&!fxMode)}
+function toggleFx(){
+  if(!fxMode){if(!act)return;fxMode=true;fxAnchor=act;
+    document.getElementById('fxBtn').classList.add('on');document.getElementById('fxBtn').classList.remove('disabled');
+    document.getElementById('fBar').classList.add('fx-on');
+    document.querySelectorAll('.op').forEach(b=>b.disabled=false);
+    const cell=D[act];document.getElementById('fIn').value=cell&&cell.raw.startsWith('=')?cell.raw:'=';
+    document.getElementById('fIn').focus();toast(LL[lang].fxStart);
+  }else{endFx(true);} // Re-press fx = confirm
+}
+function endFx(apply){
+  if(apply&&fxAnchor){const val=document.getElementById('fIn').value.trim();
+    if(val&&val!=='='){if(!D[fxAnchor])D[fxAnchor]={raw:'',v:''};D[fxAnchor].raw=val;D[fxAnchor].v=val.startsWith('=')?ev(val):val;recalc();
+    const inp=document.querySelector(`[data-c="${fxAnchor}"]`);if(inp){inp.value=D[fxAnchor].v;inp.classList.toggle('fm',val.startsWith('='));inp.classList.toggle('er',D[fxAnchor].v==='#ERR');}
+    toast(LL[lang].fxEnd);}}
+  fxMode=false;fxAnchor=null;
+  document.getElementById('fxBtn').classList.remove('on');document.getElementById('fBar').classList.remove('fx-on');
+  document.querySelectorAll('.op').forEach(b=>b.disabled=true);
+  document.querySelectorAll('.sh td.fx-ref').forEach(td=>td.classList.remove('fx-ref'));
+  updateFxBtn();
+}
+function insOp(op){if(!fxMode)return;const fi=document.getElementById('fIn');fi.value+=op;fi.focus();}
+
+// CONFIRM BUTTON
+function doConfirm(){
+  if(fxMode){endFx(true);return;}
+  // Normal mode: apply formula bar content to active cell
+  if(!act)return;
+  const val=document.getElementById('fIn').value.trim();
+  if(!val){return;}
+  if(!D[act])D[act]={raw:'',v:''};
+  D[act].raw=val;D[act].v=val.startsWith('=')?ev(val):val;
+  recalc();
+  const inp=document.querySelector(`[data-c="${act}"]`);
+  if(inp){inp.value=D[act].v;inp.classList.toggle('fm',val.startsWith('='));inp.classList.toggle('er',D[act].v==='#ERR');}
+  toast(LL[lang].applied);
+}
+
+// CELL CLEAR
+function clearCell(){
+  if(!act)return;
+  delete D[act];delete CLR[act];
+  const inp=document.querySelector(`[data-c="${act}"]`);
+  if(inp){inp.value='';inp.className='ci';inp.closest('td').style.background='';}
+  document.getElementById('fIn').value='';
+  recalc();toast(LL[lang].cellCleared);
+}
+
+// TABLE
+function gen(){R=parseInt(document.getElementById('rIn').value)||5;C=parseInt(document.getElementById('cIn').value)||4;R=Math.max(1,Math.min(100,R));C=Math.max(1,Math.min(26,C));D={};CLR={};act=null;endFx(false);render();toast(LL[lang].generated)}
+function render(){
+  const t=document.getElementById('sheet');let h='<thead><tr><th class="corner"></th>';
+  for(let c=0;c<C;c++)h+=`<th class="ch">${colN(c)}</th>`;
+  h+='</tr></thead><tbody>';
+  for(let r=0;r<R;r++){h+=`<tr><th class="rh">${r+1}</th>`;
+  for(let c=0;c<C;c++){const id=cid(r,c),cell=D[id],clr=CLR[id]||'';
+  const val=cell?(cell.raw.startsWith('=')?cell.v:cell.raw):'';
+  const fc=cell&&cell.raw.startsWith('=')?'fm':'';const ec=cell&&cell.v==='#ERR'?'er':'';
+  const bg=clr?`background:${FM[clr]||clr};`:'';
+  h+=`<td style="${bg}"><input type="text" class="ci ${fc} ${ec}" data-c="${id}" value="${esc(String(val))}" onfocus="onF('${id}')" onblur="onB('${id}',this)" oninput="onI('${id}',this)" onclick="onClick('${id}',event)"></td>`}
+  h+='</tr>'}h+='</tbody>';t.innerHTML=h;
+  document.getElementById('cRef').textContent=act||'—';
+  if(!fxMode)document.getElementById('fIn').value=act&&D[act]?D[act].raw:'';
+  updateFxBtn();
+}
+function esc(s){return s.replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+
+function onF(id){
+  if(fxMode)return;
+  act=id;document.getElementById('cRef').textContent=id;
+  const cell=D[id];document.getElementById('fIn').value=cell?cell.raw:'';
+  const inp=document.querySelector(`[data-c="${id}"]`);
+  if(cell&&cell.raw.startsWith('='))inp.value=cell.raw;
+  document.querySelectorAll('.sh td').forEach(td=>td.classList.remove('act'));
+  inp.closest('td').classList.add('act');
+  if(curClr){CLR[id]=curClr;inp.closest('td').style.background=FM[curClr]||'';}
+  updateFxBtn();
+}
+function onB(id,inp){
+  if(fxMode)return;
+  const raw=inp.value.trim();
+  if(raw===''){delete D[id]}else{if(!D[id])D[id]={raw:'',v:''};D[id].raw=raw;D[id].v=raw.startsWith('=')?ev(raw):raw}
+  recalc();
+}
+function onI(id,inp){if(act===id&&!fxMode)document.getElementById('fIn').value=inp.value}
+function onClick(id,e){
+  if(fxMode){e.preventDefault();e.stopPropagation();
+    document.getElementById('fIn').value+=id;
+    const td=document.querySelector(`[data-c="${id}"]`);if(td)td.closest('td').classList.add('fx-ref');
+    document.getElementById('fIn').focus();return;}
+  if(curClr){CLR[id]=curClr;document.querySelector(`[data-c="${id}"]`).closest('td').style.background=FM[curClr]||'';}
+}
+
+const fi=document.getElementById('fIn');
+fi.addEventListener('input',function(){if(fxMode||!act)return;const inp=document.querySelector(`[data-c="${act}"]`);if(inp)inp.value=this.value});
+fi.addEventListener('keydown',function(e){
+  if(e.key==='Enter'){e.preventDefault();
+    if(fxMode){endFx(true);return;}
+    if(act){const inp=document.querySelector(`[data-c="${act}"]`);if(inp){inp.value=this.value;onB(act,inp);
+    const ref=pRef(act);if(ref&&ref.r+1<R){const ni=document.querySelector(`[data-c="${cid(ref.r+1,ref.c)}"]`);if(ni)ni.focus()}}}}
+  if(e.key==='Escape'&&fxMode){endFx(false);}
+});
+document.addEventListener('keydown',function(e){
+  if(fxMode){if(e.key==='Escape')endFx(false);return;}
+  if(!act)return;const inp=document.activeElement;if(!inp||!inp.classList.contains('ci'))return;
+  const ref=pRef(act);if(!ref)return;let nr=ref.r,nc=ref.c;
+  if(e.key==='Tab'){e.preventDefault();nc=e.shiftKey?nc-1:nc+1}
+  else if(e.key==='Enter'){e.preventDefault();onB(act,inp);nr++}
+  else return;
+  if(nr>=0&&nr<R&&nc>=0&&nc<C){const ni=document.querySelector(`[data-c="${cid(nr,nc)}"]`);if(ni)ni.focus()}
+});
+
+function pickClr(el){curClr=el.getAttribute('data-c')||'';document.querySelectorAll('.sw').forEach(s=>s.classList.remove('on'));el.classList.add('on');
+  if(act){if(!curClr){delete CLR[act];const td=document.querySelector(`[data-c="${act}"]`);if(td)td.closest('td').style.background=''}
+  else{CLR[act]=curClr;const td=document.querySelector(`[data-c="${act}"]`);if(td)td.closest('td').style.background=FM[curClr]||''}}}
+function addR(){if(!R){gen();return}R++;document.getElementById('rIn').value=R;syncRI();render();recalc()}
+function addC(){if(C>=26)return;if(!C){gen();return}C++;document.getElementById('cIn').value=C;syncCI();render();recalc()}
+async function copyTbl(){if(!R||!C)return;let t='';for(let c=0;c<C;c++)t+=(c?'\t':'')+colN(c);t+='\n';for(let r=0;r<R;r++){for(let c=0;c<C;c++){const id=cid(r,c);const cell=D[id];t+=(c?'\t':'')+(cell?String(cell.v):'')}t+='\n'}try{await navigator.clipboard.writeText(t);toast(LL[lang].copied)}catch{const ta=document.createElement('textarea');ta.value=t;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);toast(LL[lang].copied)}}
+function confirmClear(){document.getElementById('cfmOvl').classList.add('show')}
+function closeCfm(){document.getElementById('cfmOvl').classList.remove('show')}
+function doClear(){D={};CLR={};act=null;endFx(false);render();closeCfm();toast(LL[lang].cleared)}
+
+function setView(m){if(m==='preview'){showPv();document.getElementById('vPrev').classList.add('on');document.getElementById('vEdit').classList.remove('on')}else{closePv();document.getElementById('vEdit').classList.add('on');document.getElementById('vPrev').classList.remove('on')}}
+function showPv(){
+  const t=document.getElementById('pvTable');let h='<tbody>';
+  for(let r=0;r<R;r++){h+='<tr>';for(let c=0;c<C;c++){const id=cid(r,c),cell=D[id],clr=CLR[id]||'';
+  const val=cell?String(cell.v):'';const bg=clr?`background:${FM[clr]||''};`:'';
+  h+=`<td style="${bg}">${esc(val)}</td>`}h+='</tr>'}
+  h+='</tbody>';t.innerHTML=h;document.getElementById('pvOvl').classList.add('show');
+}
+function closePv(){document.getElementById('pvOvl').classList.remove('show');document.getElementById('vEdit').classList.add('on');document.getElementById('vPrev').classList.remove('on')}
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2000)}
+buildSel();applyL();gen();
+</script>
+</body>
+</html>
